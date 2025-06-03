@@ -4,7 +4,7 @@ Painel de tratamento de arquivo lista_bens gerado pelo eLog e exportar arquivo p
 
 ## Processamento de Listagem geral de bens do eLog
 
-Atualmente a tecnologia utilizada é o painel streamlit, onde o arquivo é carregado manualmente pelo usuário.
+Atualmente a tecnologia utilizada é o painel streamlit, onde o arquivo é carregado manualmente pelo usuário através do sítio 'https://tratamentoelogpf.streamlit.app/'.
 
 - Extract: Aplicativo python que digere um arquivo exportado pelo sistema de gestão patrimonial eLog.
 - Transform: Transforma os dados, compila e reordena as colunas, preenche os dados vazios.

@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Mateus Pinheiro <mateus.mcpa@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "tratamento_streamlit", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -15,3 +18,5 @@ openpyxl = "^3.1.5"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+

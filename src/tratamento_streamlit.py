@@ -296,21 +296,22 @@ def salva_dataframe(df_processado):
 
 
 # ------------------- STREAMLIT APP -------------------
+if __name__ == "__main__":
 
-st.title("Processamento de Listagem geral de bens do eLog")
+    st.title("Processamento de Listagem geral de bens do eLog")
 
-uploaded_file = st.file_uploader("Selecione o arquivo Excel para processar", type=["xlsx"])
+    uploaded_file = st.file_uploader("Selecione o arquivo Excel para processar", type=["xlsx"])
 
-if uploaded_file is not None:
-    st.info("Lendo arquivo Excel...")
-    df_lista_materiais = ler_arquivo_xlsx_com_progresso_streamlit(uploaded_file)
-    if df_lista_materiais is not None:
-        st.success("Arquivo lido com sucesso!")
-        df_processado = processa_planilha(df_lista_materiais)
-        st.success("Planilha processada!")
-        st.info("Gerando planilha processada...")
-        salva_dataframe(df_processado)
-        st.success("Processamento concluído!")
-        
-else:
-    st.warning("Faça upload de um arquivo Excel para começar.")
+    if uploaded_file is not None:
+        st.info("Lendo arquivo Excel...")
+        df_lista_materiais = ler_arquivo_xlsx_com_progresso_streamlit(uploaded_file)
+        if df_lista_materiais is not None:
+            st.success("Arquivo lido com sucesso!")
+            df_processado = processa_planilha(df_lista_materiais)
+            st.success("Planilha processada!")
+            st.info("Gerando planilha processada...")
+            salva_dataframe(df_processado)
+            st.success("Processamento concluído!")
+            
+    else:
+        st.warning("Faça upload de um arquivo Excel para começar.")

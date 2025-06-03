@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "tratamento-de-relatorio-elog-pf"
+version = "0.1.0"
+description = ""
+authors = ["Mateus Pinheiro <mateus.mcpa@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+streamlit = "^1.45.1"
+python-calamine = "^0.3.2"
+openpyxl = "^3.1.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

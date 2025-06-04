@@ -12,8 +12,7 @@ def ler_arquivo_xlsx_com_progresso_streamlit(uploaded_file):
     resultados = {}
     tamanho_inicial = uploaded_file.size / (1024 * 1024)
     resultados['tamanho_inicial_mb'] = tamanho_inicial
-    with open('data_bronze/resultados.json', 'w') as f:
-        json.dump(resultados, f, indent=4)
+    
     # Lê o arquivo Excel
     try:
         df = pd.read_excel(uploaded_file, engine='calamine')
@@ -216,12 +215,7 @@ def processa_planilha(df):
     #Remover coluinas com nome 'Unnamed'
     df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
 
-    #salvar csv de localidades únicas como lista
-    localidades = df['localidade'].unique()
-    localidades = pd.Series(localidades, name='localidade')
-    pd.concat([localidades,pd.Series(['Nova localidade'])])
-    localidades.to_csv('data_bronze/localidades.csv', index=False, header=False)
-
+    
     
     #trnasforma valores numéricos em float -> '.' => ''' e ',' => '.'
     colunas_valores = ['valor', 'valor entrada', 'valor acumulado', 'valor depreciacao acumulada']

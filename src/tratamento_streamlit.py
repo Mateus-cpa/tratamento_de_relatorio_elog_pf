@@ -9,9 +9,8 @@ def pega_tamanho_em_mb(caminho: str):
     return os.path.getsize(caminho) / (1024 * 1024)
 
 def ler_arquivo_xlsx_com_progresso_streamlit(uploaded_file):
-    resultados = {}
     tamanho_inicial = uploaded_file.size / (1024 * 1024)
-    resultados['tamanho_inicial_mb'] = tamanho_inicial
+    st.write(f"Tamanho do arquivo inicial: {tamanho_inicial:.2f} MB")
     
     # Lê o arquivo Excel
     try:
@@ -31,13 +30,9 @@ def repor_virgula_por_ponto(valor):
 # (Cole aqui as funções processa_planilha, salva_estatisticas_levantamento, salva_dataframe, adaptando para uso com Streamlit)
 
 def processa_planilha(df):    
-    with open('data_bronze/resultados.json', 'w') as f: #processa
-        resultados = json.load(f)
-    resultados['qtde_colunas_inicial'] = df.shape[1]
-    resultados['qtde_de_linhas_inicial'] = df.shape[0]
-    st.write(f'Quantidade de linhas: {resultados["qtde_de_linhas_inicial"]}')
-    st.write(f'Quantidade inicial de colunas: {resultados['qtde_colunas_inicial']}')
-    st.write(f'Lista de colunas: {df.columns.tolist()}')
+    st.write(f'Quantidade de linhas: {df.shape[0]}')
+    st.write(f'Quantidade inicial de colunas: {df.shape[1]}')
+    st.write(f'Lista de colunas iniciais: {df.columns.tolist()}')
     
  
     #checar se colunas de números de série existem na planilha
@@ -48,24 +43,20 @@ def processa_planilha(df):
                  'n  serie', ' placa ',  ' serie', 'serie',
                   'n  serie.1', 'numero de serie.3','numero serie']
     existing_serie_cols = [col for col in cols_to_check if col in df.columns]
-    #resultados['colunas_existentes_numeros_serie'] = [existing_serie_cols]
-
+    
     #checar se colunas de modelo existem na planilha
     cols_to_check = ['modelo', 'modelo  ', 'modelo    ', 
                      'modelo1', 'modelo.1', 'modelo ']
     existing_modelo_cols = [col for col in cols_to_check if col in df.columns]
-    #resultados['existing_modelo_cols'] = [existing_modelo_cols]
     
     # checar se colunas de marca existem na planilha
     cols_to_check = ['marca','marca.1', 'marca1']
     existing_marca_cols = [col for col in cols_to_check if col in df.columns]
-    #resultados['existing_marca_cols'] = [existing_marca_cols]
     
     #checar se colunas de tombo antigo existem na planilha
     cols_to_check = ['tombo antigo', 'tombo antigo.1']
     existing_tombo_antigo_cols = [col for col in cols_to_check if col in df.columns]
-    #resultados['existing_tombo_antigo_cols'] = [existing_tombo_antigo_cols]
-
+    
     # checar se colunas de especificações na planilha
     cols_to_check = ['observacao bloqueio', 'matriz', 'qtd de rodas',
                 'acabamento da estrutura', 'altura', 'ano de fabricacao',
@@ -103,8 +94,7 @@ def processa_planilha(df):
                  'peso.1', 'potencia.1', 'tamanho da maleta',
                  'velocidade de impressao', 'voltagem.1']
     existing_especificacoes_cols = [col for col in cols_to_check if col in df.columns]
-    resultados['existing_especificacoes_cols'] = [existing_especificacoes_cols]
-
+    
     # criar coluna de serie que compilará os demais números de série
     df['serie_total'] = None
     df['modelo_total'] = None
@@ -183,14 +173,8 @@ def processa_planilha(df):
     # dividir a célula e retornar a última parte após '-' para retitrar a sigla
     df['sigla'] = df['unidade responsavel material'].apply(lambda x: x.split('-')[-1].strip())
 
-   
+    st.write(f"Quantidade de colunas após processamento: {df.shape[1]}")
     
-    # salvar dados em resultados
-    resultados['qtde_colunas_final'] = df.shape[1]
-    resultados['qtde_de_linhas_final'] = df.shape[0]
-    with open('data_bronze/resultados.json', 'w') as f: #salva
-        json.dump(resultados, f, indent=4) 
-
     #trazer o tombo novo para a 1ª coluna (para o PROCV do excel)
     df = df.reindex(columns=['num tombamento'] + [col for col in df.columns if col != 'num tombamento'])
     
@@ -253,29 +237,21 @@ def salva_dataframe(df_processado):
     df_processado.to_csv('data_bronze/lista_bens-processado.csv')
     df_processado.to_json('data_bronze/lista_bens-processado.json', orient='records', lines=True)
     df_processado.to_excel('data_bronze/lista_bens-processado.xlsx', engine='openpyxl', index=False)
-    with open('data_bronze/resultados.json', 'r') as f: #recupera
-        resultados = json.load(f)
-    resultados['tamanho_final_csv_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.csv')
-    resultados['tamanho_final_json_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.json')
-    resultados['tamanho_final_xlsx_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.xlsx')
-    resultados['data_processamento'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with open('data_bronze/resultados.json', 'w') as f:#ressalva
-        json.dump(resultados, f, indent=4)
+    st.write("Tamanhos dos arquivos processados:")
+    st.write(f"CSV: {pega_tamanho_em_mb('data_bronze/lista_bens-processado.csv'):.2f} MB")
+    st.write(f"JSON: {pega_tamanho_em_mb('data_bronze/lista_bens-processado.json'):.2f} MB")
+    st.write(f"XLSX: {pega_tamanho_em_mb('data_bronze/lista_bens-processado.xlsx'):.2f} MB")
+    
     st.divider()
     st.subheader("Download dos arquivos processados")
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     col1.download_button(
         label="xlsx processado",
         data=open('data_bronze/lista_bens-processado.xlsx', 'rb'),
         file_name='lista_bens-processado.xlsx',
         mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    col4.download_button(
-        label="Resultados JSON",
-        data=open('data_bronze/resultados.json', 'rb'),
-        file_name='resultados.json',
-        mime='application/json'
-    )
+    
     col3.download_button(
         label="CSV processado",
         data=open('data_bronze/lista_bens-processado.csv', 'rb'),

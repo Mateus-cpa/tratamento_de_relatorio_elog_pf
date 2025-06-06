@@ -249,6 +249,9 @@ def processa_planilha(df):
 
 
 def salva_dataframe(df_processado):
+    # salva o DataFrame processado em diferentes formatos
+    if not os.path.exists('data_bronze'):
+        os.makedirs('data_bronze')
     df_processado.to_csv('data_bronze/lista_bens-processado.csv')
     df_processado.to_json('data_bronze/lista_bens-processado.json', orient='records', lines=True)
     df_processado.to_excel('data_bronze/lista_bens-processado.xlsx', engine='openpyxl', index=False)

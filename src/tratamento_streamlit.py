@@ -453,6 +453,10 @@ def apresenta_graficos(base_elog : pd.DataFrame):
         ax.set_title('Quantidade de bens por grupo de material (cores por ano de levantamento)')
         plt.tight_layout()
 
+        for i, (idx, row) in enumerate(pivot.iterrows()):
+            total = row.sum()
+            ax.text(total + max(pivot.sum(axis=1)) * 0.01, i, str(int(total)), va='center', fontsize=9, fontweight='bold')
+
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
         buf.seek(0)

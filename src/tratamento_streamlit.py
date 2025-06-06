@@ -31,7 +31,7 @@ def repor_virgula_por_ponto(valor):
 # (Cole aqui as funções processa_planilha, salva_estatisticas_levantamento, salva_dataframe, adaptando para uso com Streamlit)
 
 def processa_planilha(df):    
-    with open('data_bronze/resultados.json', 'r') as f:
+    with open('data_bronze/resultados.json', 'r') as f: #processa
         resultados = json.load(f)
     resultados['qtde_colunas_inicial'] = df.shape[1]
     resultados['qtde_de_linhas_inicial'] = df.shape[0]
@@ -188,7 +188,7 @@ def processa_planilha(df):
     # salvar dados em resultados
     resultados['qtde_colunas_final'] = df.shape[1]
     resultados['qtde_de_linhas_final'] = df.shape[0]
-    with open('data_bronze/resultados.json', 'w') as f:
+    with open('data_bronze/resultados.json', 'w') as f: #salva
         json.dump(resultados, f, indent=4) 
 
     #trazer o tombo novo para a 1ª coluna (para o PROCV do excel)
@@ -253,13 +253,13 @@ def salva_dataframe(df_processado):
     df_processado.to_csv('data_bronze/lista_bens-processado.csv')
     df_processado.to_json('data_bronze/lista_bens-processado.json', orient='records', lines=True)
     df_processado.to_excel('data_bronze/lista_bens-processado.xlsx', engine='openpyxl', index=False)
-    with open('data_bronze/resultados.json', 'r') as f:
+    with open('data_bronze/resultados.json', 'r') as f: #recupera
         resultados = json.load(f)
     resultados['tamanho_final_csv_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.csv')
     resultados['tamanho_final_json_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.json')
     resultados['tamanho_final_xlsx_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.xlsx')
     resultados['data_processamento'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with open('data_bronze/resultados.json', 'w') as f:
+    with open('data_bronze/resultados.json', 'w') as f:#ressalva
         json.dump(resultados, f, indent=4)
     st.divider()
     st.subheader("Download dos arquivos processados")

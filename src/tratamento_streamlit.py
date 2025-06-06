@@ -280,7 +280,7 @@ if __name__ == "__main__":
         df_lista_materiais = ler_arquivo_xlsx_com_progresso_streamlit(uploaded_file)
         if df_lista_materiais is not None:
             st.success("Arquivo lido com sucesso!")
-            st.dataframe(df_lista_materiais.head(10))
+            #st.dataframe(df_lista_materiais.head(10))
             df_processado = processa_planilha(df_lista_materiais)
             st.success("Planilha processada!")
             st.info("Gerando planilha processada...")

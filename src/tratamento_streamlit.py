@@ -31,7 +31,7 @@ def repor_virgula_por_ponto(valor):
 # (Cole aqui as funções processa_planilha, salva_estatisticas_levantamento, salva_dataframe, adaptando para uso com Streamlit)
 
 def processa_planilha(df):    
-    with open('data_bronze/resultados.json', 'r') as f: #processa
+    with open('data_bronze/resultados.json', 'w') as f: #processa
         resultados = json.load(f)
     resultados['qtde_colunas_inicial'] = df.shape[1]
     resultados['qtde_de_linhas_inicial'] = df.shape[0]

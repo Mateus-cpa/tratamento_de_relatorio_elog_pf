@@ -173,7 +173,6 @@ def processa_planilha(df):
     # dividir a célula e retornar a última parte após '-' para retitrar a sigla
     df['sigla'] = df['unidade responsavel material'].apply(lambda x: x.split('-')[-1].strip())
 
-    st.write(f"Quantidade de colunas após processamento: {df.shape[1]}")
     
     #trazer o tombo novo para a 1ª coluna (para o PROCV do excel)
     df = df.reindex(columns=['num tombamento'] + [col for col in df.columns if col != 'num tombamento'])

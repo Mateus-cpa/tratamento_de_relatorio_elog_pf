@@ -9,9 +9,9 @@ def pega_tamanho_em_mb(caminho: str):
     return os.path.getsize(caminho) / (1024 * 1024)
 
 def ler_arquivo_xlsx_com_progresso_streamlit(uploaded_file):
-    #resultados = {}
+    resultados = {}
     tamanho_inicial = uploaded_file.size / (1024 * 1024)
-    #resultados['tamanho_inicial_mb'] = tamanho_inicial
+    resultados['tamanho_inicial_mb'] = tamanho_inicial
     
     # Lê o arquivo Excel
     try:
@@ -31,13 +31,13 @@ def repor_virgula_por_ponto(valor):
 # (Cole aqui as funções processa_planilha, salva_estatisticas_levantamento, salva_dataframe, adaptando para uso com Streamlit)
 
 def processa_planilha(df):    
-    #with open('data_bronze/resultados.json', 'r') as f:
-    #    resultados = json.load(f)
-    #resultados['qtde_colunas_inicial'] = df.shape[1]
-    #resultados['qtde_de_linhas_inicial'] = df.shape[0]
-    #st.write(f'Quantidade de linhas: {resultados["qtde_de_linhas_inicial"]}')
-    #st.write(f'Quantidade inicial de colunas: {resultados['qtde_colunas_inicial']}')
-    #st.write(f'Lista de colunas: {df.columns.tolist()}')
+    with open('data_bronze/resultados.json', 'r') as f:
+        resultados = json.load(f)
+    resultados['qtde_colunas_inicial'] = df.shape[1]
+    resultados['qtde_de_linhas_inicial'] = df.shape[0]
+    st.write(f'Quantidade de linhas: {resultados["qtde_de_linhas_inicial"]}')
+    st.write(f'Quantidade inicial de colunas: {resultados['qtde_colunas_inicial']}')
+    st.write(f'Lista de colunas: {df.columns.tolist()}')
     
  
     #checar se colunas de números de série existem na planilha
@@ -103,7 +103,7 @@ def processa_planilha(df):
                  'peso.1', 'potencia.1', 'tamanho da maleta',
                  'velocidade de impressao', 'voltagem.1']
     existing_especificacoes_cols = [col for col in cols_to_check if col in df.columns]
-    #resultados['existing_especificacoes_cols'] = [existing_especificacoes_cols]
+    resultados['existing_especificacoes_cols'] = [existing_especificacoes_cols]
 
     # criar coluna de serie que compilará os demais números de série
     df['serie_total'] = None
@@ -186,10 +186,10 @@ def processa_planilha(df):
    
     
     # salvar dados em resultados
-    #resultados['qtde_colunas_final'] = df.shape[1]
-    #resultados['qtde_de_linhas_final'] = df.shape[0]
-    #with open('data_bronze/resultados.json', 'w') as f:
-    #    json.dump(resultados, f, indent=4) 
+    resultados['qtde_colunas_final'] = df.shape[1]
+    resultados['qtde_de_linhas_final'] = df.shape[0]
+    with open('data_bronze/resultados.json', 'w') as f:
+        json.dump(resultados, f, indent=4) 
 
     #trazer o tombo novo para a 1ª coluna (para o PROCV do excel)
     df = df.reindex(columns=['num tombamento'] + [col for col in df.columns if col != 'num tombamento'])
@@ -250,34 +250,32 @@ def processa_planilha(df):
 
 def salva_dataframe(df_processado):
     # salva o DataFrame processado em diferentes formatos
-    if not os.path.exists('data_bronze'):
-        os.makedirs('data_bronze')
     df_processado.to_csv('data_bronze/lista_bens-processado.csv')
     df_processado.to_json('data_bronze/lista_bens-processado.json', orient='records', lines=True)
     df_processado.to_excel('data_bronze/lista_bens-processado.xlsx', engine='openpyxl', index=False)
-    #with open('data_bronze/resultados.json', 'r') as f:
-    #    resultados = json.load(f)
-    #resultados['tamanho_final_csv_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.csv')
-    #resultados['tamanho_final_json_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.json')
-    #resultados['tamanho_final_xlsx_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.xlsx')
-    #resultados['data_processamento'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #with open('data_bronze/resultados.json', 'w') as f:
-    #    json.dump(resultados, f, indent=4)
+    with open('data_bronze/resultados.json', 'r') as f:
+        resultados = json.load(f)
+    resultados['tamanho_final_csv_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.csv')
+    resultados['tamanho_final_json_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.json')
+    resultados['tamanho_final_xlsx_mb'] = pega_tamanho_em_mb(caminho='data_bronze/lista_bens-processado.xlsx')
+    resultados['data_processamento'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with open('data_bronze/resultados.json', 'w') as f:
+        json.dump(resultados, f, indent=4)
     st.divider()
     st.subheader("Download dos arquivos processados")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     col1.download_button(
         label="xlsx processado",
         data=open('data_bronze/lista_bens-processado.xlsx', 'rb'),
         file_name='lista_bens-processado.xlsx',
         mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    #col4.download_button(
-    #    label="Resultados JSON",
-    #    data=open('data_bronze/resultados.json', 'rb'),
-    #    file_name='resultados.json',
-    #    mime='application/json'
-    #)
+    col4.download_button(
+        label="Resultados JSON",
+        data=open('data_bronze/resultados.json', 'rb'),
+        file_name='resultados.json',
+        mime='application/json'
+    )
     col3.download_button(
         label="CSV processado",
         data=open('data_bronze/lista_bens-processado.csv', 'rb'),
@@ -294,7 +292,9 @@ def salva_dataframe(df_processado):
 
 # ------------------- STREAMLIT APP -------------------
 if __name__ == "__main__":
-
+    if not os.path.exists('data_bronze'):
+        os.makedirs('data_bronze')
+    
     st.title("Processamento de Listagem geral de bens do eLog")
 
     uploaded_file = st.file_uploader("Selecione o arquivo Excel para processar", type=["xlsx"])
